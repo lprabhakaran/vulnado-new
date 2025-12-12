@@ -1,0 +1,35 @@
+name: snyk-sca-test-workflow
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+on:
+  workflow_dispatch:
+permissions:
+  scm-token-own: read
+  scm-token-org: read
+  id-token: write
+jobs:
+  build:
+    steps:
+      - name: checkout-source-code
+        uses: cloudbees-io/checkout@v1
+
+     
+
+      - name: Run Snyk SCA Scan
+        id: snyk-sca-step
+        uses: cloudbees-io/snyk-sca-plugin-private@v1
+        with:
+          snyk-token: ${{ secrets.SNYK_TOKEN }}
+          org-id: ${{ vars.SNYK_ORG_ID }}
+          cli-params: --all-projects -- -s /cloudbees/workspace/settings.xml
+
+      - id: print-outputs-from-snyk-sca-step
+        name: print outputs from upstream snyk sca step
+        uses: docker://alpine:latest
+        run: |
+          echo "Outputs from upstream snyk sca step:"
+          echo "Critical count: ${{ steps.snyk-sca-step.outputs.critical-count }}"
+          echo "Very high count: ${{ steps.snyk-sca-step.outputs.very-high-count }}"
+          echo "High count: ${{ steps.snyk-sca-step.outputs.high-count }}"
+          echo "Medium count: ${{ steps.snyk-sca-step.outputs.medium-count }}"
+          echo "Low count: ${{ steps.snyk-sca-step.outputs.low-count }}"
