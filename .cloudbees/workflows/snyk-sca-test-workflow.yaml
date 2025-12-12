@@ -21,7 +21,7 @@ jobs:
         with:
           snyk-token: ${{ secrets.SNYK_TOKEN }}
           org-id: ${{ vars.SNYK_ORG_ID }}
-          cli-params: --all-projects -- -s /cloudbees/workspace/settings.xml
+          
 
       - id: print-outputs-from-snyk-sca-step
         name: print outputs from upstream snyk sca step
